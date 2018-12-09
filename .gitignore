@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints
+
+# OS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# Data
+data/
+!data/starred/recipe_sample.json
+
+# Res / config
+config.py
+word_tsne.html
+dump_SVD
+dump_NMF
+estimation.txt
