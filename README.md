@@ -61,7 +61,7 @@ Tips
 + NMF (Non-negative Matrix Factorization)
 + SVD (Singular Value Decompostion)
 
-We implement this idea mainly by **matrix factorization**, which gives us more quantified way to measure our model by recall, see more details [here](Collab_filter_analysis.ipynb).
+We implement this idea mainly by **matrix factorization**, which gives us more quantified way to measure our model by recall, see more details [here](collab_filter_analysis.ipynb).
 
 TL;DR;
 
