@@ -5,17 +5,15 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import matplotlib
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from surprise import Dataset,Reader, SVD, NMF, dump
+import pandas as pd
+from surprise import Dataset, Reader, SVD, NMF, dump
 from surprise.accuracy import rmse
-from surprise.model_selection import GridSearchCV, KFold
+from surprise.model_selection import KFold
 
 MIN_RECIPES_PER_USER = 5
 MIN_USER_PER_RECIPES = 50
-KFOLD_NUM = 3
+KFOLD_NUM = 5
 THRESHOLD = 4.95
 TOP_K = 5
 
@@ -104,35 +102,42 @@ def load_dataset():
 def load_trained_pred_algo(model_path):
     predictions, algo = dump.load(model_path)
     df = pd.DataFrame(predictions, columns=['uid', 'iid', 'rui', 'est', 'details'])
-    return df.rename(index=str, columns={"uid": "user_id", "iid": "item_id", "rui": "rating", "est": "estimation"}).drop("details", axis=1), predictions, algo
+    return df.rename(index=str,
+                     columns={"uid": "user_id", "iid": "item_id", "rui": "rating", "est": "estimation"}).drop("details",
+                                                                                                              axis=1), predictions, algo
 
 
-def train_helper(algo, savename, trainset_cv, testset_cv):
+def train_helper(algo, savename, trainset_cv, testset_cv, save=False):
     algo.fit(trainset_cv)
-    print(f"{savename} on trainset")
-    predictions = algo.test(trainset_cv.build_testset())
-    rmse(predictions, verbose=True)
-    print(f"{savename} on testset")
-    predictions = algo.test(testset_cv)
-    rmse(predictions, verbose=True)
-    dump.dump(f"models/dump_{savename}", predictions, algo)
+    print(f"{savename} on dev set:", end=" ")
+    predictions_dev = algo.test(trainset_cv.build_testset())
+    rmse(predictions_dev, verbose=True)
+
+    print(f"{savename} on test set:", end=" ")
+    predictions_test = algo.test(testset_cv)
+    rmse(predictions_test, verbose=True)
+
+    if save:
+        dump.dump(f"models/dump_{savename}_dev", predictions_dev, algo)
+        dump.dump(f"models/dump_{savename}_test", predictions_test, algo)
 
 
 def train():
     data = load_dataset()
-    # algo_svd = SVD()
+    algo_svd = SVD()
     algo_nmf = NMF()
 
-    print('CV procedure:')
+    print("Cross Validation procedure")
     kf = KFold(n_splits=KFOLD_NUM)
     for i, (trainset_cv, testset_cv) in enumerate(kf.split(data), start=1):
-        print('fold number', i)
-        # train_and_save(algo_svd, "SVD", trainset_cv, testset_cv)
-        train_helper(algo_nmf, "NMF", trainset_cv, testset_cv)
+        print(f"===> Fold number {i}")
+        # Save the first fold
+        train_helper(algo_svd, "SVD", trainset_cv, testset_cv, i == 1)
+        train_helper(algo_nmf, "NMF", trainset_cv, testset_cv, i == 1)
 
 
 def estimate():
-    predictions_svd, algo_svd = dump.load('models/dump_SVD')
+    predictions_svd, algo_svd = dump.load('models/dump_SVD_test')
     precisions, recalls = precision_recall_at_k(predictions_svd, k=TOP_K, threshold=THRESHOLD)
 
     df_svd = pd.DataFrame(predictions_svd, columns=['uid', 'iid', 'rui', 'est', 'details'])
@@ -159,6 +164,7 @@ def cal_recall(predictions, err_threshold=0.05):
         fn_num = fn.shape[0]
         recalls[uid] = tp_num / (tp_num + fn_num)
     return recalls
+
 
 def precision_recall_at_k(predictions, k, threshold):
     """Return precision and recall at k metrics for each user."""
@@ -195,4 +201,3 @@ def precision_recall_at_k(predictions, k, threshold):
 
 if __name__ == "__main__":
     train()
-    estimate()

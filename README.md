@@ -1,22 +1,22 @@
 # Food  <img src="https://latex.codecogs.com/gif.latex?\chi">
 This is a group project for CS229, categorized in Natural Language Process.
 
-More details would be in this [poster]().
+More details would be in this [poster](https://drive.google.com/open?id=1J7tbJdQwfu4JX3Rdc_TM-nX2g2fifUBA).
 
 ## Motivation
-Have you ever walked into a restaurant ordering a certain dish, but had no idea what to pair with it? Or you
-are making dinner and have one dish in mind, but can’t decide what other dishes you should cook to give your taste
-buds the greatest enjoyment?
-Our project intends to address this common conundrum by building a model to recommend Chinese dishes
-to users after they input a dish they like. Limiting our dishes to Chinese cuisines allows us to take on a more tailored
-recommendation system, while still maintain a high practical value given the rising popularity and diversity of
-Chinese cuisines. We hope that tackling this less touched topic of using Machine Learning for dish recommendation
-can help further promote Chinese food.
-While there are a lot of recommendation systems for movies, audios, books, or restaurants, surprisingly
-there is hardly any for dishes. As a result, we were not able to find a suitable dataset, so we scraped data from a
-popular Chinese recipe website called [Xia Chu Fang Cooking Recipe](https://www.xiachufang.com/). Utilizing this
-data, we will explore word embedding algorithms and recommendation systems to build our model.
 
+While  there  are  a  lot  of  recommendation  systems  for  movies,  audios,  books,  or  restaurants,  surprisingly  there  is 
+hardly any for dishes.  As food lovers, we intend to address this issue by exploring models for recommending Chinese dishes to users.  
+We scraped data from a popular Chinese recipe website/app called [Xia Chu Fang Cooking Recipe](https://www.xiachufang.com/),  and  
+implemented  word  embedding  algorithms  and  recommendation  systems  algorithms to build our model.  
+Specifically, the input to our algorithm are users from Xia Chu Fang and dish names they stored in their favourite list.  
+We then use Word2Vec and collaborative filtering to build our recommendation system.Specifically, 
+we explore the Skip-Gram model in Word2Vec to calculate dish similarity, and apply the Non-NegativeMatrix Factorization 
+and Singular Value Decomposition methods in collaborative filtering to output predicted ratings on dishes, 
+which allows generation of top recommendations for users based on predicted ratings.Limiting our dishes to Chinese 
+cuisine allows us to take on a more tailored recommendation system, while still maintain a high practical value given 
+the rising popularity and diversity of Chinese cuisines.  Through this project, we hope to tackle a less touched topic 
+of using Machine Learning for dish recommendation and promote Chinese food.
 
 ## Method
 
@@ -30,7 +30,7 @@ data, we will explore word embedding algorithms and recommendation systems to bu
 
 ```preprocess.py```
 - Map users' favorite recipes into a fixed-length dictionary, which has 1871 unique keys representing recipe names.
-- This dictionary also has corresponding english translation of each dishe's chinese recipe name.
+- This dictionary also has corresponding english translation of each dish's chinese recipe name.
 
 ### 3. Train models
 
@@ -59,13 +59,14 @@ Tips
 #### Collaborative filter
 
 + NMF (Non-negative Matrix Factorization)
-+ SVD (Singular Value Decompostion)
++ SVD (Singular Value Decomposition)
 
 We implement this idea mainly by **matrix factorization**, which gives us more quantified way to measure our model by recall, see more details [here](collab_filter_analysis.ipynb).
 
 TL;DR;
 
-|        | SVD    | NMF    |
-|--------|--------|--------|
-| RMSE   | 0.3653 | 0.5845 |
-| Recall | 0.9234 | 0.5406 |
+|     | Dev Set RMSE | Test Set RMSE | Dev Set Recall | Test Set Recall |
+|-----|--------------|---------------|----------------|-----------------|
+| NMF | 0.4574       | 0.5851        | 0.5081         | 0.5393          |
+| SVD | 0.3317       | 0.3634        | 0.9173         | 0.9301          |
+

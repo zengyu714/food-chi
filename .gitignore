@@ -14,9 +14,11 @@ __pycache__/
 data/
 !data/starred/recipe_sample.json
 
-# Res / config
+# Models
+models/
+!model/word2vec_20181119_052844.model
+
+# Res / Config
 config.py
 word_tsne.html
-dump_SVD
-dump_NMF
 estimation.txt
